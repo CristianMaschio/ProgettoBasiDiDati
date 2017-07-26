@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Lug 26, 2017 alle 11:51
+-- Creato il: Lug 26, 2017 alle 12:01
 -- Versione del server: 10.1.25-MariaDB
 -- Versione PHP: 7.1.7
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `corso` (
   `Codice` int(11) NOT NULL,
-  `Nome` varchar(16) NOT NULL,
+  `Nome` varchar(30) NOT NULL,
   `Laurea` varchar(30) NOT NULL,
   `IsMagistrale` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -72,36 +72,6 @@ INSERT INTO `docente` (`Matricola`, `Nome`, `Cognome`, `AreaRicerca`, `Fascia`, 
 --
 DELIMITER $$
 CREATE TRIGGER `Before_Docente_Insert` BEFORE INSERT ON `docente` FOR EACH ROW BEGIN
-DECLARE Tipo varchar(15);
-
-DECLARE TipoC varchar(15);
-SET TipoC = NEW.Categoria;
-
-SELECT TipoStanza INTO Tipo
-    FROM stanza
-    WHERE Nome=NEW.IdStanza;
-
-IF ('Aula' LIKE Tipo OR 'Laboratorio' LIKE Tipo OR 'Sala riunioni' LIKE Tipo) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'Impossibile aggiungere il docente, al docente e'' possibile assegnargli solo gli uffici';
-END IF;
-
-IF ('Professore' LIKE TipoC) THEN
-	IF ('' LIKE NEW.Fascia) THEN
-    	SIGNAL SQLSTATE '45000'
-    	SET MESSAGE_TEXT = 'Impossibile aggiungere il docente, al professore va assegnata la fascia';
-    END IF;
-ELSE IF ('' NOT LIKE NEW.Fascia) THEN
-	SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'Impossibile aggiungere il docente, la fascia va assegnata solo al professore';
-END IF;
-END IF;
-
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Before_Docente_Update` BEFORE UPDATE ON `docente` FOR EACH ROW BEGIN
 DECLARE Tipo varchar(15);
 
 DECLARE TipoC varchar(15);
@@ -281,22 +251,6 @@ CREATE TABLE `tecnico_amministrativo` (
 --
 DELIMITER $$
 CREATE TRIGGER `Before_Tecnico_Insert` BEFORE INSERT ON `tecnico_amministrativo` FOR EACH ROW BEGIN
-DECLARE Tipo varchar(15);
-
-SELECT TipoStanza INTO Tipo
-    FROM stanza
-    WHERE Nome=NEW.IdStanza;
-
-IF ('Aula' LIKE Tipo OR 'Laboratorio' LIKE Tipo OR 'Sala riunioni' LIKE Tipo) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'Impossibile aggiungere l''utente, al tecnico ammministrativo e'' possibile assegnargli solo gli uffici';
-END IF;
-
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Before_Tecnico_Update` BEFORE UPDATE ON `tecnico_amministrativo` FOR EACH ROW BEGIN
 DECLARE Tipo varchar(15);
 
 SELECT TipoStanza INTO Tipo
