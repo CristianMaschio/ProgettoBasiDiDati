@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Lug 26, 2017 alle 12:01
+-- Creato il: Ago 08, 2017 alle 10:16
 -- Versione del server: 10.1.25-MariaDB
 -- Versione PHP: 7.1.7
 
@@ -134,6 +134,13 @@ CREATE TABLE `insegnamento` (
   `IdDocente` int(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dump dei dati per la tabella `insegnamento`
+--
+
+INSERT INTO `insegnamento` (`DataInizio`, `DataFine`, `IdCorso`, `IdDocente`) VALUES
+('2017-07-26', '2018-07-26', 12606541, 1551215484);
+
 -- --------------------------------------------------------
 
 --
@@ -225,11 +232,11 @@ INSERT INTO `stanza` (`Nome`, `NumPosti`, `TipoStanza`, `Piano`, `IdEdificio`) V
 --
 
 CREATE TABLE `supporto` (
-  `IdDocenteSupporto` int(11) NOT NULL,
-  `IdDocente` int(11) NOT NULL,
+  `IdDocenteSupporto` int(7) NOT NULL,
   `IdCorso` int(11) NOT NULL,
   `DataInizio` date NOT NULL,
-  `DataFine` date NOT NULL
+  `DataFine` date NOT NULL,
+  `IdDocente` int(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -245,6 +252,13 @@ CREATE TABLE `tecnico_amministrativo` (
   `Ruolo` set('Tecnico','Segretario') NOT NULL,
   `IdStanza` varchar(15) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dump dei dati per la tabella `tecnico_amministrativo`
+--
+
+INSERT INTO `tecnico_amministrativo` (`Matricola`, `Nome`, `Cognome`, `Ruolo`, `IdStanza`) VALUES
+(5444515, 'Pozio', 'Conzio', 'Tecnico', 'Ufficio');
 
 --
 -- Trigger `tecnico_amministrativo`
@@ -293,7 +307,7 @@ ALTER TABLE `edificio`
 -- Indici per le tabelle `insegnamento`
 --
 ALTER TABLE `insegnamento`
-  ADD PRIMARY KEY (`DataInizio`,`DataFine`,`IdDocente`),
+  ADD PRIMARY KEY (`DataInizio`,`DataFine`,`IdCorso`,`IdDocente`),
   ADD KEY `IdCorso` (`IdCorso`),
   ADD KEY `IdDocente` (`IdDocente`);
 
@@ -310,6 +324,15 @@ ALTER TABLE `prenotazione`
 ALTER TABLE `stanza`
   ADD PRIMARY KEY (`Nome`),
   ADD KEY `IdEdificio` (`IdEdificio`);
+
+--
+-- Indici per le tabelle `supporto`
+--
+ALTER TABLE `supporto`
+  ADD PRIMARY KEY (`IdDocenteSupporto`,`IdCorso`,`DataInizio`,`DataFine`,`IdDocente`),
+  ADD KEY `DataInizio` (`DataInizio`),
+  ADD KEY `IdCorso` (`IdCorso`),
+  ADD KEY `IdDocente` (`IdDocente`);
 
 --
 -- Indici per le tabelle `tecnico_amministrativo`
@@ -332,7 +355,8 @@ ALTER TABLE `docente`
 -- Limiti per la tabella `insegnamento`
 --
 ALTER TABLE `insegnamento`
-  ADD CONSTRAINT `insegnamento_ibfk_1` FOREIGN KEY (`IdCorso`) REFERENCES `corso` (`Codice`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `insegnamento_ibfk_1` FOREIGN KEY (`IdCorso`) REFERENCES `corso` (`Codice`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `insegnamento_ibfk_2` FOREIGN KEY (`IdDocente`) REFERENCES `docente` (`Matricola`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Limiti per la tabella `prenotazione`
@@ -346,6 +370,15 @@ ALTER TABLE `prenotazione`
 --
 ALTER TABLE `stanza`
   ADD CONSTRAINT `stanza_ibfk_1` FOREIGN KEY (`IdEdificio`) REFERENCES `edificio` (`Nome`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Limiti per la tabella `supporto`
+--
+ALTER TABLE `supporto`
+  ADD CONSTRAINT `supporto_ibfk_1` FOREIGN KEY (`IdDocenteSupporto`) REFERENCES `docente` (`Matricola`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `supporto_ibfk_2` FOREIGN KEY (`DataInizio`) REFERENCES `insegnamento` (`DataInizio`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `supporto_ibfk_3` FOREIGN KEY (`IdCorso`) REFERENCES `insegnamento` (`IdCorso`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `supporto_ibfk_4` FOREIGN KEY (`IdDocente`) REFERENCES `insegnamento` (`IdDocente`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Limiti per la tabella `tecnico_amministrativo`
