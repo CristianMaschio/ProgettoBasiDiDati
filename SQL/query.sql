@@ -29,3 +29,15 @@ ORDER BY Corso
 SELECT IdStanza AS Stanza, corso.Nome AS Corso, DataInizio AS Data inizio, DataFine AS Data fine
 FROM prenotazione LEFT JOIN corso ON prenotazione.IdCorso = corso.Codice
 WHERE DataInizio >= '2017-07-20 00:00:00' AND DataFine <= '2017-07-22 00:00:00'
+
+-- -------------------------------------------------------- 
+--
+-- Mostra tutte le aule libere in un certo lasso ti tempo
+-- OUTPUT: Stanza
+--
+SELECT stanza.Nome AS Stanza
+FROM stanza
+WHERE Nome NOT IN(
+    SELECT IdStanza AS Nome
+    FROM prenotazione LEFT JOIN corso ON prenotazione.IdCorso = corso.Codice
+    WHERE DataInizio >= '2017-07-20 00:00:00' AND DataFine <= '2017-07-22 00:00:00')
