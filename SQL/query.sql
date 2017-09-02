@@ -20,3 +20,12 @@ FROM (docente LEFT JOIN insegnamento ON docente.Matricola=insegnamento.IdDocente
 SELECT corso.Nome AS Corso, prenotazione.IdStanza AS Aula, prenotazione.DataInizio AS Data inzio, prenotazione.DataFine AS Data fine
 FROM prenotazione LEFT JOIN corso ON prenotazione.IdCorso = corso.Codice
 ORDER BY Corso
+
+-- -------------------------------------------------------- 
+--
+-- Mostra tutte le aule prenotate in un certo lasso ti tempo
+-- OUTPUT: Stanza | Corso | Data inizo | Data fine
+--
+SELECT IdStanza AS Stanza, corso.Nome AS Corso, DataInizio AS Data inizio, DataFine AS Data fine
+FROM prenotazione LEFT JOIN corso ON prenotazione.IdCorso = corso.Codice
+WHERE DataInizio >= '2017-07-20 00:00:00' AND DataFine <= '2017-07-22 00:00:00'
