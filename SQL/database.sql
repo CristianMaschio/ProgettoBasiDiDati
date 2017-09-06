@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ago 08, 2017 alle 10:16
+-- Creato il: Set 06, 2017 alle 13:56
 -- Versione del server: 10.1.25-MariaDB
 -- Versione PHP: 7.1.7
 
@@ -40,8 +40,16 @@ CREATE TABLE `corso` (
 --
 
 INSERT INTO `corso` (`Codice`, `Nome`, `Laurea`, `IsMagistrale`) VALUES
-(12606541, 'Sistemi Operativ', 'Informatica', 1),
-(126065416, 'Calcolo Numerico', 'Informatica', 0);
+(1285151, 'Reti e Sicurezza', 'Informatica', 0),
+(12606541, 'Sistemi Operativi', 'Informatica', 0),
+(126065416, 'Calcolo Numerico', 'Informatica', 0),
+(245578645, 'Basi di dati', 'Informatica', 0),
+(246548954, 'Logica', 'Informatica', 0),
+(248745844, 'Analisi Matematica', 'Informatica', 0),
+(254789647, 'Architettura degli elaboratori', 'Informatica', 0),
+(1597546595, 'Probabilità e statistica', 'Informatica', 0),
+(1887845448, 'Programmazione', 'Informatica', 0),
+(2142454287, 'Programmazione ad oggetti', 'Informatica', 0);
 
 -- --------------------------------------------------------
 
@@ -64,8 +72,7 @@ CREATE TABLE `docente` (
 --
 
 INSERT INTO `docente` (`Matricola`, `Nome`, `Cognome`, `AreaRicerca`, `Fascia`, `Categoria`, `IdStanza`) VALUES
-(3434, 'Mario', 'Rossi', 'Rosso', 'Ordinario', 'Professore', 'Ufficio'),
-(1551215484, 'Andrea', 'Ciucchi Ciucchi', 'Ritardi di Marchiori', '', 'Ricercatore', 'Ufficio');
+(11245789, 'Caterina', 'Sartori', 'MAT/05', NULL, 'Professore', '369');
 
 --
 -- Trigger `docente`
@@ -133,13 +140,6 @@ CREATE TABLE `insegnamento` (
   `IdCorso` int(11) NOT NULL,
   `IdDocente` int(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dump dei dati per la tabella `insegnamento`
---
-
-INSERT INTO `insegnamento` (`DataInizio`, `DataFine`, `IdCorso`, `IdDocente`) VALUES
-('2017-07-26', '2018-07-26', 12606541, 1551215484);
 
 -- --------------------------------------------------------
 
@@ -218,6 +218,8 @@ CREATE TABLE `stanza` (
 --
 
 INSERT INTO `stanza` (`Nome`, `NumPosti`, `TipoStanza`, `Piano`, `IdEdificio`) VALUES
+('369', 2, 'Ufficio', 4, 'Torre Archimede'),
+('404', 1, 'Ufficio', 3, 'Torre Archimede'),
 ('LabP140', 140, 'Laboratorio', 2, 'Paolotti'),
 ('LabP36', 36, 'Laboratorio', 2, 'Paolotti'),
 ('LabTA', 63, 'Laboratorio', 2, 'Torre Archimede'),
