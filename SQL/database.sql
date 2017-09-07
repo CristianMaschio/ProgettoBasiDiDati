@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Set 06, 2017 alle 13:56
+-- Creato il: Set 07, 2017 alle 10:45
 -- Versione del server: 10.1.25-MariaDB
 -- Versione PHP: 7.1.7
 
@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `database v0.03`
+-- Database: `basidati`
 --
 
 -- --------------------------------------------------------
@@ -40,16 +40,14 @@ CREATE TABLE `corso` (
 --
 
 INSERT INTO `corso` (`Codice`, `Nome`, `Laurea`, `IsMagistrale`) VALUES
-(1285151, 'Reti e Sicurezza', 'Informatica', 0),
-(12606541, 'Sistemi Operativi', 'Informatica', 0),
 (126065416, 'Calcolo Numerico', 'Informatica', 0),
+(126065418, 'Sistemi Operativi', 'Informatica', 0),
+(128515122, 'Reti e Sicurezza', 'Informatica', 0),
+(188784544, 'Programmazione', 'Informatica', 0),
+(214245428, 'Programmazione ad oggetti', 'Informatica', 0),
 (245578645, 'Basi di dati', 'Informatica', 0),
-(246548954, 'Logica', 'Informatica', 0),
 (248745844, 'Analisi Matematica', 'Informatica', 0),
-(254789647, 'Architettura degli elaboratori', 'Informatica', 0),
-(1597546595, 'Probabilità e statistica', 'Informatica', 0),
-(1887845448, 'Programmazione', 'Informatica', 0),
-(2142454287, 'Programmazione ad oggetti', 'Informatica', 0);
+(254789647, 'Architettura degli elaboratori', 'Informatica', 0);
 
 -- --------------------------------------------------------
 
@@ -62,7 +60,7 @@ CREATE TABLE `docente` (
   `Nome` varchar(15) NOT NULL,
   `Cognome` varchar(15) NOT NULL,
   `AreaRicerca` varchar(20) NOT NULL,
-  `Fascia` set('Associato','Ordinario','Contratto','') DEFAULT NULL,
+  `Fascia` set('Associato','Ordinario','Contratto','') NOT NULL,
   `Categoria` set('Professore','Ricercatore','Dottorando','Assegnista') NOT NULL,
   `IdStanza` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -72,7 +70,14 @@ CREATE TABLE `docente` (
 --
 
 INSERT INTO `docente` (`Matricola`, `Nome`, `Cognome`, `AreaRicerca`, `Fascia`, `Categoria`, `IdStanza`) VALUES
-(11245789, 'Caterina', 'Sartori', 'MAT/05', NULL, 'Professore', '369');
+(2174569, 'Michela', 'Zaglia', 'MAT/08', 'Associato', 'Professore', NULL),
+(3456874, 'Alessandro', 'Sperduti', 'INF/01', 'Associato', 'Professore', NULL),
+(3457895, 'Gilberto', 'File\'', 'INF/01', 'Ordinario', 'Professore', '404'),
+(3546845, 'Massimo', 'Marchiori', 'INFO/01', 'Associato', 'Professore', NULL),
+(4756842, 'Francesco', 'Ranzato', 'INF/01', 'Associato', 'Professore', NULL),
+(11245789, 'Caterina', 'Sartori', 'MAT/05', 'Contratto', 'Professore', '369'),
+(12764587, 'Claudio', 'Palazzi', 'INF/01', 'Associato', 'Professore', NULL),
+(32145684, 'Mauro', 'Conti', 'INF/01', 'Associato', 'Professore', '402');
 
 --
 -- Trigger `docente`
@@ -141,6 +146,20 @@ CREATE TABLE `insegnamento` (
   `IdDocente` int(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dump dei dati per la tabella `insegnamento`
+--
+
+INSERT INTO `insegnamento` (`DataInizio`, `DataFine`, `IdCorso`, `IdDocente`) VALUES
+('2017-10-01', '2018-09-30', 126065416, 2174569),
+('2017-10-01', '2018-09-30', 126065418, 12764587),
+('2017-10-01', '2018-09-30', 128515122, 3546845),
+('2017-10-01', '2018-09-30', 188784544, 3457895),
+('2017-10-01', '2018-09-30', 214245428, 4756842),
+('2017-10-01', '2018-09-30', 245578645, 32145684),
+('2017-10-01', '2018-09-30', 248745844, 11245789),
+('2017-10-01', '2018-09-30', 254789647, 3456874);
+
 -- --------------------------------------------------------
 
 --
@@ -159,10 +178,10 @@ CREATE TABLE `prenotazione` (
 --
 
 INSERT INTO `prenotazione` (`IdStanza`, `IdCorso`, `DataInizio`, `DataFine`) VALUES
-('LabP36', 12606541, '2017-07-21 00:00:00', '2017-07-22 00:00:00'),
 ('LabP140', 126065416, '2017-07-12 00:00:00', '2017-07-26 00:00:00'),
 ('LabTA', 126065416, '2017-07-31 09:00:00', '2017-07-31 13:00:00'),
-('P200', 126065416, '2017-07-20 00:00:00', '2017-07-21 00:00:00');
+('P200', 126065416, '2017-07-20 00:00:00', '2017-07-21 00:00:00'),
+('LabP36', 126065418, '2017-07-21 00:00:00', '2017-07-22 00:00:00');
 
 --
 -- Trigger `prenotazione`
@@ -219,10 +238,12 @@ CREATE TABLE `stanza` (
 
 INSERT INTO `stanza` (`Nome`, `NumPosti`, `TipoStanza`, `Piano`, `IdEdificio`) VALUES
 ('369', 2, 'Ufficio', 4, 'Torre Archimede'),
+('402', 1, 'Ufficio', 4, 'Torre Archimede'),
 ('404', 1, 'Ufficio', 3, 'Torre Archimede'),
 ('LabP140', 140, 'Laboratorio', 2, 'Paolotti'),
 ('LabP36', 36, 'Laboratorio', 2, 'Paolotti'),
 ('LabTA', 63, 'Laboratorio', 2, 'Torre Archimede'),
+('Lum250', 250, 'Aula', 0, 'Paolotti'),
 ('P100', 100, 'Aula', 4, 'Paolotti'),
 ('P200', 200, 'Aula', 4, 'Paolotti'),
 ('Ufficio', 2, 'Ufficio', 4, 'Torre Archimede');
