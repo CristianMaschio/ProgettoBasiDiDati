@@ -334,3 +334,26 @@ END IF;
 END|
 DELIMITER ;
 
+
+
+#Inserisce un uccisione dati gli id dei giocatori ed il codice della partita
+
+DROP PROCEDURE IF EXISTS PrenotazioneSettimanale;
+
+DELIMITER |
+CREATE PROCEDURE PrenotazioneSettimanale(Stanza VARCHAR(10),Corso INT(11),DataInizio DATE, DataFine DATE, OraInizio TIME, OraFine TIME)
+
+BEGIN
+DECLARE DataProgress DATETIME;
+
+	IF (DataInizio<DataFine AND OraInizio<OraFine) THEN
+    SELECT DATE_ADD(DataInizio,INTERVAL 0 DAY) INTO DataProgress;
+    	WHILE (DataProgress<DataFine) DO
+            INSERT INTO `prenotazione` (`IdStanza`, `IdCorso`, `DataInizio`, `DataFine`) VALUES
+			(Stanza, Corso, DataProgress+OraInizio, DataProgress+OraFine);
+            SELECT DATE_ADD(DataProgress,INTERVAL 7 DAY) INTO DataProgress;
+		END WHILE;
+        
+    END IF;
+END|
+DELIMITER ;
