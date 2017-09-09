@@ -254,10 +254,37 @@ END|
 
 DELIMITER ;
 
+-- -----------------------------------------------
+--
+-- Funzione la quale verifica se un ufficio ha un posto disponibile
+-- Ritorna falso se ha posti disponibili
+-- Ritrona true se non ha posti disponibili
+--
+DROP FUNCTION IF EXISTS CheckUffici;
+DELIMITER |
+CREATE FUNCTION CheckUffici(Ufficio VARCHAR(10))
+RETURNS BOOLEAN
+BEGIN
+	IF ((SELECT COUNT(stanza.Nome) AS Numero
+        FROM ((stanza LEFT JOIN docente ON stanza.Nome=docente.IdStanza) LEFT JOIN tecnico_amministrativo ON stanza.Nome = tecnico_amministrativo.IdStanza)
+        WHERE Ufficio = stanza.Nome)
+        <
+        (SELECT stanza.NumPosti
+        FROM stanza
+        WHERE Ufficio=stanza.Nome))THEN
+    	RETURN 0; 
+    ELSE
+    	RETURN 1;
+    END IF;
+END|
+
+DELIMITER ;
+
 -- -------------------------------------------------
 --
 -- Trigger il quale ha il compito di verificare:
 -- se non gli sia stata assegnata al docente una stanza che corrisponda ad un'aula, laboratorio o sala riunioni
+-- se la stanza assegnata ha raggiunto la capienza massima
 -- se la Categoria corrisponde al professore, allora la fascia non puo' essere vuota
 -- se la Categoria non corrisponde al professore, allora la fascia deve essere vuota
 -- 
@@ -277,6 +304,10 @@ SELECT TipoStanza INTO Tipo
 IF ('Aula' LIKE Tipo OR 'Laboratorio' LIKE Tipo OR 'Sala riunioni' LIKE Tipo) THEN
     SIGNAL SQLSTATE '45000'
     SET MESSAGE_TEXT = 'Impossibile aggiungere il docente, al docente e'' possibile assegnargli solo gli uffici';
+END IF;
+IF (CheckUffici(NEW.IdStanza)) THEN
+	SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Impossibile aggiungere il docente, l''ufficio ha gia'' raggiunto la capienza massima';
 END IF;
 
 IF ('Professore' LIKE TipoC) THEN
