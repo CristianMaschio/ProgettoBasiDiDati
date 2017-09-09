@@ -380,6 +380,11 @@ IF ('Aula' LIKE Tipo OR 'Laboratorio' LIKE Tipo OR 'Sala riunioni' LIKE Tipo) TH
     SET MESSAGE_TEXT = 'Impossibile aggiungere l''utente, al tecnico ammministrativo e'' possibile assegnargli solo gli uffici';
 END IF;
 
+IF (CheckUffici(NEW.IdStanza)) THEN
+	SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Impossibile aggiungere il tecnico, l''ufficio ha gia'' raggiunto la capienza massima';
+END IF;
+
 END|
 DELIMITER ;
 
