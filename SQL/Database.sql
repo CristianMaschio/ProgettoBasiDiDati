@@ -233,6 +233,26 @@ INSERT INTO `prenotazione` (`IdStanza`, `IdCorso`, `DataInizio`, `DataFine`) VAL
 ('Lum250', 248745844, '2017-10-20 13:00:00', '2017-10-20 15:00:00'),
 ('Lum250', 254789647, '2017-10-20 09:00:00', '2017-10-20 11:00:00');
 
+-- -----------------------------------------------
+--
+-- Funzione la quale verifica se e' disponibile un'aula in un determinato lasso di tempo  
+-- ritorna true se esiste gia' una prenotazione altrimenti false
+--
+DROP FUNCTION IF EXISTS CheckPrenotazione;
+DELIMITER |
+CREATE FUNCTION CheckPrenotazione(Stanza VARCHAR(10),Corso INT(11),DataInizio DATETIME, DataFine DATETIME)
+RETURNS BOOLEAN
+BEGIN
+	IF EXISTS (SELECT p.DataInizio
+                FROM prenotazione AS p
+                WHERE Stanza = p.IdStanza AND p.DataInizio<DataFine AND p.DataFine>DataInizio)THEN
+    	RETURN 1;
+    ELSE
+    	RETURN 0;
+    END IF;
+END|
+
+DELIMITER ;
 
 -- -------------------------------------------------
 --
@@ -240,7 +260,7 @@ INSERT INTO `prenotazione` (`IdStanza`, `IdCorso`, `DataInizio`, `DataFine`) VAL
 -- se non gli sia stata assegnata al docente una stanza che corrisponda ad un'aula, laboratorio o sala riunioni
 -- se la Categoria corrisponde al professore, allora la fascia non puo' essere vuota
 -- se la Categoria non corrisponde al professore, allora la fascia deve essere vuota
---
+-- 
 
 DROP TRIGGER IF EXISTS Before_Docente_Insert;
 DELIMITER |
@@ -298,9 +318,7 @@ IF ('Aula' LIKE Tipo OR 'Laboratorio' LIKE Tipo OR 'Sala riunioni' LIKE Tipo) TH
             SET MESSAGE_TEXT = 'Impossibile aggiungere la prenotazione, la data inizio deve essere < della data fine';
         END IF;
 
-        IF EXISTS (SELECT DataInizio
-                FROM prenotazione
-                WHERE NEW.IdStanza = IdStanza AND DataInizio<NEW.DataFine AND DataFine>NEW.DataInizio)THEN
+        IF (CheckPrenotazione(NEW.IdStanza, NEW.IdCorso, NEW.DataInizio, NEW.DataFine))THEN
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Impossibile aggiungere la prenotazione, le date si sovrappongono';
         END IF;
@@ -335,8 +353,11 @@ END|
 DELIMITER ;
 
 
-
-#Inserisce un uccisione dati gli id dei giocatori ed il codice della partita
+-- ----------------------------------------------------
+--
+-- Inserisce piu' prenotazioni in un lasso di tempo, sempre nello stesso giorno della settimana, 
+-- partendo da DataInizio con orari: OraInzio a Orafine fino al raggiungimento della DataFine
+-- 
 
 DROP PROCEDURE IF EXISTS PrenotazioneSettimanale;
 
@@ -348,12 +369,15 @@ DECLARE DataProgress DATETIME;
 
 	IF (DataInizio<DataFine AND OraInizio<OraFine) THEN
     SELECT DATE_ADD(DataInizio,INTERVAL 0 DAY) INTO DataProgress;
-    	WHILE (DataProgress<DataFine) DO
-            INSERT INTO `prenotazione` (`IdStanza`, `IdCorso`, `DataInizio`, `DataFine`) VALUES
-			(Stanza, Corso, DataProgress+OraInizio, DataProgress+OraFine);
+    	WHILE (DataProgress<=DataFine) DO
+        	IF NOT(CheckPrenotazione(Stanza, Corso, DataProgress+OraInizio, DataProgress+OraFine)) THEN
+                INSERT INTO `prenotazione` (`IdStanza`, `IdCorso`, `DataInizio`, `DataFine`) VALUES
+                (Stanza, Corso, DataProgress+OraInizio, DataProgress+OraFine);
+            END IF;
             SELECT DATE_ADD(DataProgress,INTERVAL 7 DAY) INTO DataProgress;
 		END WHILE;
         
     END IF;
 END|
 DELIMITER ;
+
