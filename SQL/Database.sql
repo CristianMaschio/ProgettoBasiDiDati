@@ -85,12 +85,13 @@ CREATE TABLE `docente` (
 --
 
 CREATE TABLE `insegnamento` (
+  `IdInsegnamento` int(7) NOT NULL,
   `DataInizio` date NOT NULL,
   `DataFine` date NOT NULL,
   `IdCorso` int(11) NOT NULL,
   `IdDocente` int(7) NOT NULL,
 
-  PRIMARY KEY (`DataInizio`,`DataFine`,`IdCorso`,`IdDocente`),
+  PRIMARY KEY (`IdInsegnamento`),
   FOREIGN KEY (`IdCorso`) REFERENCES `corso` (`Codice`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`IdDocente`) REFERENCES `docente` (`Matricola`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -120,16 +121,12 @@ CREATE TABLE `prenotazione` (
 
 CREATE TABLE `supporto` (
   `IdDocenteSupporto` int(7) NOT NULL,
-  `IdCorso` int(11) NOT NULL,
-  `DataInizio` date NOT NULL,
-  `DataFine` date NOT NULL,
-  `IdDocente` int(7) NOT NULL,
+  `IdInsegnamento` int(7) NOT NULL,
+  `Descrizione` VARCHAR(300) DEFAULT NULL,
 
-  PRIMARY KEY (`IdDocenteSupporto`,`IdCorso`,`DataInizio`,`DataFine`,`IdDocente`),
+  PRIMARY KEY (`IdDocenteSupporto`,`IdInsegnamento`),
   FOREIGN KEY (`IdDocenteSupporto`) REFERENCES `docente` (`Matricola`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`DataInizio`) REFERENCES `insegnamento` (`DataInizio`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`IdCorso`) REFERENCES `insegnamento` (`IdCorso`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`IdDocente`) REFERENCES `insegnamento` (`IdDocente`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (`IdInsegnamento`) REFERENCES `insegnamento` (`IdInsegnamento`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -196,29 +193,31 @@ INSERT INTO `stanza` (`Nome`, `NumPosti`, `TipoStanza`, `Piano`, `IdEdificio`) V
 --
 
 INSERT INTO `docente` (`Matricola`, `Nome`, `Cognome`, `AreaRicerca`, `Fascia`, `Categoria`, `IdStanza`) VALUES
+(1124578, 'Caterina', 'Sartori', 'MAT/05', 'Contratto', 'Professore', '369'),
+(1276458, 'Claudio', 'Palazzi', 'INF/01', 'Associato', 'Professore', NULL),
+(1456983, 'Marco', 'Simeoni', 'INF/01', '', 'Ricercatore', NULL),
+(1478523, 'Luigi', 'Marin', 'INF/01', '', 'Dottorando', NULL),
 (2174569, 'Michela', 'Zaglia', 'MAT/08', 'Associato', 'Professore', NULL),
+(3214568, 'Mauro', 'Conti', 'INF/01', 'Associato', 'Professore', '402'),
 (3456874, 'Alessandro', 'Sperduti', 'INF/01', 'Associato', 'Professore', NULL),
 (3457895, 'Gilberto', 'File\'', 'INF/01', 'Ordinario', 'Professore', '404'),
 (3546845, 'Massimo', 'Marchiori', 'INFO/01', 'Associato', 'Professore', NULL),
-(4756842, 'Francesco', 'Ranzato', 'INF/01', 'Associato', 'Professore', NULL),
-(11245789, 'Caterina', 'Sartori', 'MAT/05', 'Contratto', 'Professore', '369'),
-(12764587, 'Claudio', 'Palazzi', 'INF/01', 'Associato', 'Professore', NULL),
-(32145684, 'Mauro', 'Conti', 'INF/01', 'Associato', 'Professore', '402');
+(4756842, 'Francesco', 'Ranzato', 'INF/01', 'Associato', 'Professore', NULL);
 
 -- -----------------------------------------------
 --
 -- Inserimento dei dati nella tabella `insegnamento`
 --
 
-INSERT INTO `insegnamento` (`DataInizio`, `DataFine`, `IdCorso`, `IdDocente`) VALUES
-('2017-10-01', '2018-09-30', 126065416, 2174569),
-('2017-10-01', '2018-09-30', 126065418, 12764587),
-('2017-10-01', '2018-09-30', 128515122, 3546845),
-('2017-10-01', '2018-09-30', 188784544, 3457895),
-('2017-10-01', '2018-09-30', 214245428, 4756842),
-('2017-10-01', '2018-09-30', 245578645, 32145684),
-('2017-10-01', '2018-09-30', 248745844, 11245789),
-('2017-10-01', '2018-09-30', 254789647, 3456874);
+INSERT INTO `insegnamento` (`IdInsegnamento`,`DataInizio`, `DataFine`, `IdCorso`, `IdDocente`) VALUES
+('1456987','2017-10-01', '2018-09-30', 126065416, 2174569),
+('2456987','2017-10-01', '2018-09-30', 126065418, 1276458),
+('3456987','2017-10-01', '2018-09-30', 128515122, 3546845),
+('4456987','2017-10-01', '2018-09-30', 188784544, 3457895),
+('5456987','2017-10-01', '2018-09-30', 214245428, 4756842),
+('6456987','2017-10-01', '2018-09-30', 245578645, 3214568),
+('7456987','2017-10-01', '2018-09-30', 248745844, 1124578),
+('8456987','2017-10-01', '2018-09-30', 254789647, 3456874);
 
 -- -----------------------------------------------
 --
@@ -232,6 +231,25 @@ INSERT INTO `prenotazione` (`IdStanza`, `IdCorso`, `DataInizio`, `DataFine`) VAL
 ('LabP36', 245578645, '2017-10-20 09:00:00', '2017-10-20 13:00:00'),
 ('Lum250', 248745844, '2017-10-20 13:00:00', '2017-10-20 15:00:00'),
 ('Lum250', 254789647, '2017-10-20 09:00:00', '2017-10-20 11:00:00');
+
+-- -----------------------------------------------
+--
+-- Inserimento dei dati nella tabella `supporto`
+--
+
+INSERT INTO `supporto` (`IdDocenteSupporto`, `IdInsegnamento`, `Descrizione`) VALUES
+(1456983, '4456987', 'Tutor supporto studenti'),
+(1478523, '4456987', NULL);
+
+-- -----------------------------------------------
+--
+-- Inserimento dei dati nella tabella `tecnico_amministrativo`
+--
+
+INSERT INTO `tecnico_amministrativo` (`Matricola`, `Nome`, `Cognome`, `Ruolo`, `IdStanza`) VALUES
+(3245687, 'Omar', 'Trevisan', 'Tecnico', NULL),
+(3654789, 'Michele', 'Rutugna', 'Segretario', 'Ufficio'),
+(4567123, 'Giancarlo', 'Scapinello', 'Tecnico', '369');
 
 -- -----------------------------------------------
 --
@@ -265,13 +283,14 @@ DELIMITER |
 CREATE FUNCTION CheckUffici(Ufficio VARCHAR(10))
 RETURNS BOOLEAN
 BEGIN
-	IF ((SELECT COUNT(stanza.Nome) AS Numero
-        FROM ((stanza LEFT JOIN docente ON stanza.Nome=docente.IdStanza) LEFT JOIN tecnico_amministrativo ON stanza.Nome = tecnico_amministrativo.IdStanza)
-        WHERE Ufficio = stanza.Nome)
-        <
-        (SELECT stanza.NumPosti
-        FROM stanza
-        WHERE Ufficio=stanza.Nome))THEN
+	IF (Ufficio IS NULL OR 
+            (SELECT COUNT(stanza.Nome) AS Numero
+            FROM ((stanza LEFT JOIN docente ON stanza.Nome=docente.IdStanza) LEFT JOIN tecnico_amministrativo ON stanza.Nome = tecnico_amministrativo.IdStanza)
+            WHERE Ufficio = stanza.Nome)
+            <
+            (SELECT stanza.NumPosti
+            FROM stanza
+            WHERE Ufficio=stanza.Nome))THEN
     	RETURN 0; 
     ELSE
     	RETURN 1;
